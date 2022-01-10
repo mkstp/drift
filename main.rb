@@ -11,15 +11,15 @@ define :drift do |seed|
   total = ls.length
   sleeps = []
   (ls.length - 1).times do
-    val = quantise(Math.sin(seed) + 1, 0.25)
+    val = quantise(Math.sin(seed) + 1.25, 0.25)
     if total - val > 0
       sleeps.append(val)
       total -= val
       seed += 1
       puts total
     else
-      sleeps.append((ls.length - sleeps.sum)/2)
-      total -= (ls.length - sleeps.sum)/2
+      sleeps.append(quantise((ls.length - sleeps.sum)/2, 0.125))
+      total -= quantise((ls.length - sleeps.sum)/2, 0.125)
       puts total
     end
   end
@@ -30,7 +30,8 @@ end
 live_loop :this do
   that = drift(look)
   ls.length.times do
-    play 60 + ls.tick
+    use_synth :chiplead
+    play 60 + ls.tick, release: 0.1
     sleep that.look
   end
 end
