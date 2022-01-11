@@ -1,17 +1,15 @@
-ls = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+ls = [0, 5, 6, 1, 3, 5]
 use_random_seed 6
 #the max value in the choose parameter times
 #the number of items in the list minus 1
 #cannot be greater than the number of items in the list
 
 
-
-
 define :drift do |seed|
   total = ls.length
   sleeps = []
   (ls.length - 1).times do
-    val = quantise(Math.sin(seed) + 1.25, 0.25)
+    val = quantise(Math.sin(seed) + 1.125, 0.25)
     if total - val > 0
       sleeps.append(val)
       total -= val
@@ -28,11 +26,13 @@ define :drift do |seed|
 end
 
 live_loop :this do
-  that = drift(look)
+  rests = drift(tick(:one))
+  atck = drift(tick(:one))
+  rels = drift(tick(:one))
   ls.length.times do
-    use_synth :chiplead
-    play 60 + ls.tick, release: 0.1
-    sleep that.look
+    use_synth :piano
+    play (scale :Eb4, :aeolian)[ls.tick(:two)], release: rels.look(:two)
+    sleep rests.look(:two)
   end
 end
 
